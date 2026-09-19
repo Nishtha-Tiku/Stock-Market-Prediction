@@ -1,26 +1,53 @@
-# Stock-Market-Prediction
+# Stock Market Prediction with LSTM
 
-This repository contains an implementation of a stock market price prediction algorithm using Long Short Term Memory (LSTM) recurrent neural networks. The goal of this project is to provide more accurate stock price predictions compared to existing algorithms by leveraging the capabilities of LSTM networks.
+Forecasts short-term Microsoft (MSFT) stock prices from one-minute intraday data using a stacked Long Short-Term Memory (LSTM) network built with TensorFlow/Keras.
 
-# Introduction
-Predicting stock market prices is a challenging task that traditionally involves significant human-computer interaction. The correlated nature of stock prices makes conventional batch processing methods inefficient for stock market analysis. In this project, we propose an online learning algorithm that utilizes LSTM, a type of recurrent neural network, to adjust weights for individual data points using stochastic gradient descent.
+## Overview
 
-# Usage
-To use the stock market prediction algorithm, follow these steps:
+Stock prices are sequential, so this project uses an LSTM to learn from the previous 100 minutes of prices and predict the next one. The trained model is then used to forecast the next 30 minutes recursively.
 
-Clone the repository to your local machine.
-Install the required dependencies and libraries specified in the installation guide.
-Prepare your stock market data in the appropriate format. Ensure that the data includes the key performance indicators (KPIs) such as opening price, closing price, low price, high price, and trading volume.
-Train the LSTM network using the provided training script and your dataset.
-Evaluate the accuracy of the trained model using the evaluation script.
-Compare the results with an Artificial Neural Network (ANN) for accuracy assessment.
-Results and Analysis
-The algorithm was trained and evaluated using datasets of various sizes. The accuracy of the LSTM model was compared to an ANN model. The results indicate that the LSTM model outperformed the ANN model in terms of prediction accuracy.
+## Data
 
-The analysis also revealed that both models achieved better accuracy as the size of the dataset increased. With more data, the models were able to capture additional patterns and adjust the weights of the layers more effectively.
+- **Source:** [Alpha Vantage](https://www.alphavantage.co/) intraday API
+- **Symbol:** MSFT, closing price at 1-minute intervals
+- **Size:** 5,396 observations (most recent point: 9 June 2022)
+- **Scaling:** MinMax scaling to the range 0 to 1
+- **Split:** 65% train, 35% test (chronological)
 
-# Future Extensions
-While this stock prediction system focuses on numerical analysis, an interesting future extension would be to incorporate sentiment analysis from social media platforms such as Twitter. By analyzing the emotions expressed in related articles and tweets, the LSTM model could potentially improve its accuracy by considering contextual information and human sentiments.
+## Model
 
-# Contributing
-Contributions to this project are welcome. If you have any ideas, bug fixes, or improvements, please submit a pull request. Ensure that you follow the project's coding conventions and provide clear documentation for your changes.
+| Setting | Value |
+| ------- | ----- |
+| Input | Previous 100 minutes of closing prices |
+| Architecture | 3 stacked LSTM layers (50 units each) and a Dense output layer |
+| Loss / optimizer | Mean squared error / Adam |
+| Training | 100 epochs, batch size 64 |
+
+## Run it
+
+1. Get a free API key from Alpha Vantage.
+2. Set it as an environment variable (do not paste it into the notebook):
+   - macOS/Linux: `export ALPHAVANTAGE_API_KEY=your_key`
+   - Windows: `set ALPHAVANTAGE_API_KEY=your_key`
+3. Install and run:
+
+```bash
+git clone https://github.com/Nishtha-Tiku/Stock-Market-Prediction.git
+cd Stock-Market-Prediction
+pip install -r requirements.txt
+jupyter notebook "Stock Market prediction.ipynb"
+```
+
+Data is fetched live, so results will differ from run to run.
+
+## Limitations
+
+- Uses past closing prices only
+- One stock and a short time window
+- Multi-step forecasts feed predictions back in, so errors build up
+- Learning project, not financial advice
+
+## Future work
+
+- Compare against other baselines
+- Add features such as volume and news sentiment
